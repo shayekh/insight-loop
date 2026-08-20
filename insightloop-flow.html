@@ -1,0 +1,1321 @@
+<title>InsightLoop Structure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #F9FAFD;
+    --surface: #FFFFFF;
+    --surface-2: #F2F4F7;
+    --ink: #27272C;
+    --muted: #585858;
+    --faint: #959595;
+    --line: #E5E7EB;
+    --line-strong: #D6D6D6;
+    --accent: #188BFF;
+    --accent-ink: #0B5FC2;
+    --accent-soft: #E7F2FF;
+    --accent-soft-line: #B9DBFF;
+    --success: #227A4A;
+    --success-soft: #E4F4EA;
+    --warn: #A9650F;
+    --warn-soft: #FBEEDD;
+    --info: #6552CC;
+    --info-soft: #EEEAFB;
+    --shadow: 0 1px 2px rgba(20,20,20,.04), 0 8px 24px -12px rgba(20,20,20,.14);
+    --radius: 10px;
+    --radius-sm: 7px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141414;
+      --surface: #1C1C20;
+      --surface-2: #222226;
+      --ink: #ECECEE;
+      --muted: #A8A8AC;
+      --faint: #6E6E73;
+      --line: #303035;
+      --line-strong: #3E3E44;
+      --accent: #4FA8FF;
+      --accent-ink: #BFE0FF;
+      --accent-soft: #14283D;
+      --accent-soft-line: #1F3F5C;
+      --success: #4CBE81;
+      --success-soft: #143324;
+      --warn: #E0A24E;
+      --warn-soft: #362A16;
+      --info: #A79BEA;
+      --info-soft: #241F3A;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141414;
+    --surface: #1C1C20;
+    --surface-2: #222226;
+    --ink: #ECECEE;
+    --muted: #A8A8AC;
+    --faint: #6E6E73;
+    --line: #303035;
+    --line-strong: #3E3E44;
+    --accent: #4FA8FF;
+    --accent-ink: #BFE0FF;
+    --accent-soft: #14283D;
+    --accent-soft-line: #1F3F5C;
+    --success: #4CBE81;
+    --success-soft: #143324;
+    --warn: #E0A24E;
+    --warn-soft: #362A16;
+    --info: #A79BEA;
+    --info-soft: #241F3A;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .display {
+    font-family: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  code, .mono, .tag, .badge, .num { font-family: "JetBrains Mono", ui-monospace, monospace; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  a { color: var(--accent); }
+
+  ::selection { background: var(--accent-soft-line); }
+
+  /* ---------- shell ---------- */
+  .app {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 80px;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .brand .mark {
+    display: inline-flex;
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--surface);
+    align-items: center;
+    justify-content: center;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    flex: none;
+    transform: translateY(3px);
+  }
+  .brand h1 { font-size: 22px; margin: 0; }
+  .brand .tagline { color: var(--muted); font-size: 13px; }
+  .topbar .meta { color: var(--faint); font-size: 12.5px; text-align: right; }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tab {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 10px 14px 12px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .tab .n {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--faint);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+  .tab[aria-selected="true"] .n { border-color: var(--accent-soft-line); color: var(--accent-ink); background: var(--accent-soft); }
+
+  .panel { display: none; animation: rise .28s ease both; }
+  .panel[data-active="true"] { display: block; }
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  }
+
+  .lede {
+    color: var(--muted);
+    max-width: 62ch;
+    margin: 0 0 22px;
+    font-size: 14.5px;
+  }
+  .lede strong { color: var(--ink); font-weight: 600; }
+
+  section.block { margin-bottom: 34px; }
+  .block > h2 {
+    font-size: 19px;
+    margin: 0 0 4px;
+  }
+  .block > .sub { color: var(--muted); font-size: 13px; margin: 0 0 16px; }
+
+  /* ---------- cards / surfaces ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .card-pad { padding: 20px 22px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; }
+  @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ---------- form bits ---------- */
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .field .hint { color: var(--faint); font-size: 12px; margin-top: 5px; }
+  input[type="text"], select, textarea {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    padding: 9px 11px;
+  }
+  input[type="text"]:focus, select:focus, textarea:focus, button:focus-visible, .tab:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  textarea { resize: vertical; min-height: 60px; font-family: inherit; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .row-3 { display: grid; grid-template-columns: 1.4fr .8fr .8fr; gap: 10px; align-items: end; }
+  .row-3.scope-row { grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 700px) { .row-2, .row-3 { grid-template-columns: 1fr; } }
+  select:disabled { opacity: .5; cursor: not-allowed; }
+
+  .btn {
+    appearance: none;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover { border-color: var(--faint); }
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .btn.primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
+  .btn.ghost { border-style: dashed; color: var(--muted); background: transparent; }
+  .btn.sm { padding: 6px 11px; font-size: 12.5px; }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; }
+  .btn-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+  .qtoggle { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); overflow: hidden; }
+  .qopt {
+    appearance: none;
+    border: none;
+    border-right: 1px solid var(--line-strong);
+    background: var(--surface-2);
+    color: var(--muted);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 15px;
+    cursor: pointer;
+  }
+  .qopt:last-child { border-right: none; }
+  .qopt:hover { color: var(--ink); }
+  .qopt.active { background: var(--accent); color: #fff; }
+  .qopt:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  /* ---------- badges / chips ---------- */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    padding: 3px 8px;
+    border-radius: 100px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .badge.global { background: var(--accent-soft); color: var(--accent-ink); border-color: var(--accent-soft-line); }
+  .badge.dept   { background: var(--info-soft); color: var(--info); border-color: color-mix(in srgb, var(--info) 30%, transparent); }
+  .badge.acct   { background: var(--warn-soft); color: var(--warn); border-color: color-mix(in srgb, var(--warn) 30%, transparent); }
+  .badge.proj   { background: var(--surface-2); color: var(--muted); border-color: var(--line-strong); }
+  .badge.status-live { background: var(--success-soft); color: var(--success); }
+  .badge.status-draft { background: var(--surface-2); color: var(--muted); border-color: var(--line-strong); }
+  .badge.status-progress { background: var(--warn-soft); color: var(--warn); }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 100px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .chip + .chip { margin-left: 5px; }
+
+  .avatar {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border: 1px solid var(--accent-soft-line);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex: none;
+  }
+
+  /* ---------- table ---------- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 560px; }
+  thead th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--muted);
+    font-weight: 700;
+    padding: 10px 14px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+  td.muted, .muted { color: var(--muted); }
+  td.center, th.center { text-align: center; }
+
+  /* people rows */
+  .people-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .people-row:last-child { border-bottom: none; }
+  .people-row .name { font-weight: 600; font-size: 13.5px; }
+  .people-row .role { color: var(--faint); font-size: 12px; }
+  .people-row .chips { margin-left: auto; }
+
+  /* quarter cards */
+  .qgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 12px; }
+  .qcard {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    padding: 14px 15px;
+  }
+  .qcard .qname { font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 13px; margin-bottom: 8px; display:block; }
+  .qcard.ghost {
+    border-style: dashed;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    min-height: 74px;
+  }
+  .qcard.ghost:hover { color: var(--accent); border-color: var(--accent-soft-line); }
+
+  .crumb { color: var(--faint); font-size: 13px; margin-bottom: 6px; }
+  .crumb b { color: var(--ink); font-weight: 600; }
+
+  .callout {
+    border: 1px solid var(--accent-soft-line);
+    background: var(--accent-soft);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--accent-ink);
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+  }
+  .callout .ico { flex: none; margin-top: 1px; }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+  .mermaid { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+
+  /* ---------- app preview shell ---------- */
+  .app-shell {
+    display: flex;
+    min-height: 460px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .app-nav {
+    width: 188px;
+    flex: none;
+    background: var(--surface-2);
+    border-right: 1px solid var(--line);
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .app-nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--ink);
+    padding: 2px 6px 14px;
+  }
+  .app-nav-item {
+    appearance: none;
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .app-nav-item:hover { color: var(--ink); background: var(--surface); }
+  .app-nav-item[aria-selected="true"] { color: var(--accent-ink); background: var(--accent-soft); }
+  .app-nav-hint { margin-top: auto; padding: 12px 8px 2px; font-size: 11px; line-height: 1.5; color: var(--faint); }
+  .app-content { flex: 1; padding: 22px 24px; overflow: auto; }
+  .app-view { display: none; }
+  .app-view[data-active="true"] { display: block; }
+
+  .acct-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 14px; }
+  .acct-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 16px;
+    position: relative;
+  }
+  .acct-card[data-open-account] { cursor: pointer; transition: border-color .15s ease, transform .15s ease; }
+  .acct-card[data-open-account]:hover { border-color: var(--accent-soft-line); transform: translateY(-2px); }
+  .acct-card .cover {
+    display: inline-flex;
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    align-items: center;
+    justify-content: center;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .acct-name { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+  .acct-meta { font-size: 12px; color: var(--muted); }
+  .acct-open-hint { font-size: 11.5px; font-weight: 600; color: var(--accent); margin-top: 8px; opacity: 0; transition: opacity .15s ease; }
+  .acct-card[data-open-account]:hover .acct-open-hint { opacity: 1; }
+
+  .proj-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-2); padding: 14px 16px; }
+  .proj-name { font-weight: 600; font-size: 14px; margin-bottom: 10px; }
+  .proj-tpl-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--faint); margin-bottom: 4px; }
+  .proj-tpl-row { font-size: 12.5px; color: var(--ink); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .proj-meta { font-size: 12px; color: var(--ink); margin-bottom: 3px; display: flex; align-items: center; }
+  .proj-meta.muted { color: var(--faint); }
+  .proj-q-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .qchip { appearance: none; cursor: pointer; transition: transform .1s ease, box-shadow .1s ease; }
+  .qchip:hover { box-shadow: 0 0 0 2px var(--accent-soft-line) inset; }
+  .qchip:active { transform: translateY(1px); }
+
+  .qa-row { padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .qa-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .qa-row:first-child { padding-top: 0; }
+  .qa-q { font-weight: 600; font-size: 13.5px; margin-bottom: 5px; }
+  .qa-a { font-size: 13px; color: var(--muted); }
+
+  footer.credit { margin-top: 46px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--faint); font-size: 12px; }
+
+  .theme-toggle {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    padding: 7px 13px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    font-weight: 600;
+  }
+</style>
+
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="mark">iL</span>
+      <div>
+        <h1>InsightLoop</h1>
+        <div class="tagline">Account &rarr; Project &rarr; Quarter &rarr; Template &mdash; structure walkthrough</div>
+      </div>
+    </div>
+    <div class="meta">Prototype v0.1<br>Prepared for internal review</div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Flow sections">
+    <button class="tab" role="tab" data-tab="app" aria-selected="true"><span class="n">&#9679;</span> App preview</button>
+    <button class="tab" role="tab" data-tab="model" aria-selected="false"><span class="n">00</span> Structure</button>
+    <button class="tab" role="tab" data-tab="account" aria-selected="false"><span class="n">01</span> Create account</button>
+    <button class="tab" role="tab" data-tab="project" aria-selected="false"><span class="n">02</span> Create project</button>
+    <button class="tab" role="tab" data-tab="templates" aria-selected="false"><span class="n">03</span> Template library</button>
+    <button class="tab" role="tab" data-tab="detail" aria-selected="false"><span class="n">04</span> Project detail</button>
+  </div>
+
+  <!-- ============ APP PREVIEW ============ -->
+  <div class="panel" data-panel="app" data-active="true">
+    <p class="lede">A sidebar-nav mockup of the actual product &mdash; just two features for now: <strong>Accounts</strong> and <strong>Templates</strong>. Workspaces become accounts; each account holds its own projects, created from inside it.</p>
+
+    <div class="app-shell">
+      <nav class="app-nav">
+        <div class="app-nav-brand"><span class="mark" style="width:22px;height:22px;font-size:12px;">iL</span> InsightLoop</div>
+        <button class="app-nav-item" data-appnav="accounts" aria-selected="true">&#9635; Accounts</button>
+        <button class="app-nav-item" data-appnav="templates" aria-selected="false">&#9636; Templates</button>
+        <div class="app-nav-hint">More nav items (Reviews, Reports, Settings) come later &mdash; just these two for now.</div>
+      </nav>
+
+      <div class="app-content">
+        <div class="app-view" data-appview="accounts" data-active="true">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+            <h2 style="font-size:17px; margin:0;">Accounts</h2>
+            <button class="btn primary sm" data-goto="account">+ New account</button>
+          </div>
+          <div class="acct-grid">
+            <div class="acct-card" data-open-account="service7000" tabindex="0" role="button">
+              <span class="cover">S7</span>
+              <div class="acct-name">Service 7000</div>
+              <div class="acct-meta">MNE &middot; 3 projects</div>
+              <div class="acct-open-hint">Open &rarr;</div>
+            </div>
+            <div class="acct-card">
+              <span class="cover">AC</span>
+              <div class="acct-name">Acme Corp</div>
+              <div class="acct-meta">BetaWorks Financial &middot; 1 project</div>
+            </div>
+            <div class="acct-card">
+              <span class="cover">NT</span>
+              <div class="acct-name">Northwind Traders</div>
+              <div class="acct-meta">Northbridge Retail &middot; 3 projects</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-view" data-appview="account-detail" data-active="false">
+          <div class="crumb"><a href="#" data-back-accounts>Accounts</a> &rsaquo; <b>Service 7000</b></div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin: 4px 0 16px;">
+            <h2 style="font-size:17px; margin:0;">Service 7000 <span class="muted" style="font-weight:500; font-size:13px;">&middot; MNE</span></h2>
+            <button class="btn primary sm" data-goto="project">+ New project</button>
+          </div>
+          <div class="acct-grid">
+            <div class="proj-card">
+              <div class="proj-name">Customer Portal</div>
+              <div class="proj-tpl-label">Tagged template</div>
+              <div class="proj-tpl-row"><b>Customer Portal Health Review v1</b> <span class="badge proj">Project scope</span></div>
+              <div class="proj-tpl-label">Quarters <span style="text-transform:none; font-weight:500;">&middot; click to open</span></div>
+              <div class="proj-q-row">
+                <button type="button" class="badge status-live qchip" data-project="Customer Portal">Q4 2025</button>
+                <button type="button" class="badge status-progress qchip" data-project="Customer Portal">Q1 2026</button>
+                <button type="button" class="badge status-draft qchip" data-project="Customer Portal">Q2 2026</button>
+              </div>
+              <div class="proj-meta muted">PM Mizanur R.</div>
+            </div>
+            <div class="proj-card">
+              <div class="proj-name">SAM Portal</div>
+              <div class="proj-tpl-label">Tagged template</div>
+              <div class="proj-tpl-row"><b>SAM Portal Retention Review</b> <span class="badge proj">Project scope</span></div>
+              <div class="proj-tpl-label">Quarters <span style="text-transform:none; font-weight:500;">&middot; click to open</span></div>
+              <div class="proj-q-row">
+                <button type="button" class="badge status-draft qchip" data-project="SAM Portal">Q2 2026</button>
+              </div>
+              <div class="proj-meta muted">PM Mizanur R.</div>
+            </div>
+            <div class="proj-card">
+              <div class="proj-name">AI Automation</div>
+              <div class="proj-tpl-label">Tagged template</div>
+              <div class="proj-tpl-row"><b>MNE Delivery Review v2</b> <span class="badge dept">Business Unit scope</span></div>
+              <div class="proj-tpl-label">Quarters <span style="text-transform:none; font-weight:500;">&middot; click to open</span></div>
+              <div class="proj-q-row">
+                <button type="button" class="badge status-live qchip" data-project="AI Automation">Q1 2026</button>
+                <button type="button" class="badge status-progress qchip" data-project="AI Automation">Q2 2026</button>
+              </div>
+              <div class="proj-meta muted">PM Sara K.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-view" data-appview="quarter-detail" data-active="false">
+          <div class="crumb"><a href="#" data-back-accounts>Accounts</a> &rsaquo; <a href="#" data-back-account-detail>Service 7000</a> &rsaquo; <b id="qd-project">Customer Portal</b> &rsaquo; <b id="qd-quarter">Q1 2026</b></div>
+          <div style="display:flex; align-items:center; gap:10px; margin: 4px 0 4px;">
+            <h2 style="font-size:17px; margin:0;" id="qd-heading">Customer Portal &middot; Q1 2026</h2>
+            <span class="badge status-progress" id="qd-status">Collecting</span>
+          </div>
+          <p class="muted" id="qd-summary" style="font-size:13px; max-width:62ch; margin:6px 0 18px;"></p>
+          <div class="card card-pad" id="qd-body"></div>
+        </div>
+
+        <div class="app-view" data-appview="templates" data-active="false">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+            <h2 style="font-size:17px; margin:0;">Templates</h2>
+            <button class="btn primary sm" data-goto="templates">Open full library &rarr;</button>
+          </div>
+          <div class="tablewrap">
+            <table>
+              <thead><tr><th>Template</th><th>Scope</th><th class="center">Questions</th></tr></thead>
+              <tbody>
+                <tr><td><b>Standard Quarterly Health Review</b></td><td><span class="badge global">Global</span></td><td class="center num">24</td></tr>
+                <tr><td><b>MNE Delivery Review v2</b></td><td><span class="badge dept">Business Unit</span></td><td class="center num">19</td></tr>
+                <tr><td><b>Service 7000 Vendor Compliance Review</b></td><td><span class="badge acct">Account</span></td><td class="center num">14</td></tr>
+                <tr><td><b>Customer Portal Health Review v1</b></td><td><span class="badge proj">Project</span></td><td class="center num">11</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 00 MODEL ============ -->
+  <div class="panel" data-panel="model" data-active="false">
+    <p class="lede">Everything sits under a <strong>business unit</strong> that already exists &mdash; business unit creation isn't part of this flow. Business units hold <strong>accounts</strong> (clients, e.g. Service 7000), accounts hold <strong>projects</strong> (engagements, e.g. Customer Portal), and each project runs any number of <strong>quarters</strong> against one tagged template.</p>
+
+    <section class="block">
+      <h2>Entity hierarchy</h2>
+      <p class="sub">Business unit is pre-seeded; template is the one entity that isn't strictly owned by a project.</p>
+      <pre class="mermaid">
+flowchart TB
+  DEPT["Business Unit&#10;<i>pre-existing &mdash; e.g. MNE</i>"]
+  ACC["Account&#10;<i>client &mdash; e.g. Service 7000</i>"]
+  PROJ["Project&#10;<i>engagement &mdash; e.g. Customer Portal</i>"]
+  PEOPLE["Assigned people&#10;PM &middot; TL &middot; BA &middot; QA (N)"]
+  Q1["Quarter&#10;Q4 2025"]
+  Q2["Quarter&#10;Q1 2026"]
+  Q3["Quarter&#10;Q2 2026 &hellip;"]
+  TPL["Template tagged onto project&#10;(1, reused every quarter)"]
+  REV["Quarterly Review &amp; Questionnaire&#10;<i>own status + own Q&amp;A &mdash; click a quarter to open it,&#10;never copied from a prior quarter</i>"]
+
+  TG["No business unit&#10;<i>= Global template</i>"]
+  TD["+ Business unit&#10;<i>optional narrowing</i>"]
+  TA["+ Account&#10;<i>optional narrowing</i>"]
+  TP["+ Project&#10;<i>optional narrowing, authored by PM</i>"]
+
+  DEPT --> ACC --> PROJ
+  PROJ --> PEOPLE
+  PROJ --> TPL
+  PROJ --> Q1 & Q2 & Q3
+  Q1 --> REV
+  Q2 --> REV
+  Q3 --> REV
+  TPL -. supplies question structure, not answers .-> REV
+
+  TG -.narrows to.-> TD -.narrows to.-> TA -.narrows to.-> TP
+  TG -. tag at project setup .-> TPL
+  TD -. tag at project setup .-> TPL
+  TA -. tag at project setup .-> TPL
+  TP -. authored after project exists, auto-applied .-> TPL
+
+  classDef dept fill:#EEEAFB,stroke:#6552CC,color:#3c2f80,font-family:"Open Sans";
+  classDef acct fill:#FBEEDD,stroke:#A9650F,color:#5e3b09,font-family:"Open Sans";
+  classDef proj fill:#E7F2FF,stroke:#188BFF,color:#0B5FC2,font-family:"Open Sans";
+  classDef tpl fill:#F2F4F7,stroke:#D6D6D6,color:#27272C,font-family:"Open Sans";
+  classDef rev fill:#E4F4EA,stroke:#227A4A,color:#154a2c,font-family:"Open Sans";
+  class DEPT dept
+  class REV rev
+  class ACC acct
+  class PROJ,PEOPLE,Q1,Q2,Q3 proj
+  class TPL,TG,TD,TA,TP tpl
+      </pre>
+    </section>
+
+    <section class="block">
+      <h2>Who can do what</h2>
+      <p class="sub">Base role scope, then template authoring/edit rights by tier.</p>
+      <div class="grid-2">
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Role</th><th>Scope</th><th>Can create</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><b>Super Admin</b></td>
+                <td>Company-wide, filterable by business unit</td>
+                <td class="muted">Accounts, projects, templates &mdash; any tier</td>
+              </tr>
+              <tr>
+                <td><b>Admin</b></td>
+                <td>One business unit</td>
+                <td class="muted">Accounts &amp; projects in their unit; Business Unit &amp; Account templates</td>
+              </tr>
+              <tr>
+                <td><b>PM / TL</b></td>
+                <td>Assigned project(s) only</td>
+                <td class="muted">Project-tier templates on own project; tags any visible template onto a new project</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Template tier</th><th class="center">Super Admin</th><th class="center">Admin</th><th class="center">PM / TL</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge global">Global</span></td><td class="center">Edit</td><td class="center">View</td><td class="center">View</td></tr>
+              <tr><td><span class="badge dept">Business Unit</span></td><td class="center">Edit</td><td class="center">Edit <span class="muted">(own unit)</span></td><td class="center">View</td></tr>
+              <tr><td><span class="badge acct">Account</span></td><td class="center">Edit</td><td class="center">Edit <span class="muted">(own unit)</span></td><td class="center">View</td></tr>
+              <tr><td><span class="badge proj">Project</span></td><td class="center">Edit</td><td class="center">Edit <span class="muted">(own unit)</span></td><td class="center"><b>Edit</b> <span class="muted">(own project)</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Template dropdown, resolved</h2>
+      <p class="sub">Shown at project setup once an account (and therefore business unit) is picked.</p>
+      <div class="callout">
+        <span class="ico">&#9673;</span>
+        <span><code>scope = Global</code> &nbsp;OR&nbsp; <code>scope = Business Unit AND template.unit = project.unit</code> &nbsp;OR&nbsp; <code>scope = Account AND template.account = project.account</code>. Project-tier templates never appear here &mdash; they're created after the project exists and apply to it automatically.</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ 01 CREATE ACCOUNT ============ -->
+  <div class="panel" data-panel="account">
+    <p class="lede">An account is the <strong>client</strong>. It's tagged to one existing business unit once, at creation &mdash; every project underneath inherits that business unit.</p>
+
+    <div class="grid-2">
+      <div class="card card-pad">
+        <div class="field">
+          <label for="acc-name">Account (client) name</label>
+          <input type="text" id="acc-name" value="Service 7000">
+        </div>
+        <div class="field">
+          <label for="acc-dept">Business Unit</label>
+          <select id="acc-dept">
+            <option>MNE</option>
+            <option>BetaWorks Financial</option>
+            <option>Northbridge Retail</option>
+            <option>Ferrovia Logistics</option>
+          </select>
+          <div class="hint">Pre-seeded list &mdash; business unit creation happens elsewhere.</div>
+        </div>
+        <div class="field">
+          <label for="acc-owner">Primary contact <span class="muted" style="text-transform:none;font-weight:500;">(optional)</span></label>
+          <input type="text" id="acc-owner" placeholder="e.g. client-side stakeholder name">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary">Create account</button>
+          <button class="btn">Cancel</button>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <div class="sub" style="margin-bottom:12px;">Existing accounts</div>
+        <div class="tablewrap" style="border:none;box-shadow:none;">
+          <table style="min-width:0;">
+            <thead><tr><th>Account</th><th>Business Unit</th><th class="center">Projects</th></tr></thead>
+            <tbody>
+              <tr><td><b>Service 7000</b></td><td class="muted">MNE</td><td class="center num">3</td></tr>
+              <tr><td><b>Acme Corp</b></td><td class="muted">BetaWorks Financial</td><td class="center num">1</td></tr>
+              <tr><td><b>Northwind Traders</b></td><td class="muted">Northbridge Retail</td><td class="center num">3</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 02 CREATE PROJECT ============ -->
+  <div class="panel" data-panel="project">
+    <p class="lede">A project is one <strong>engagement under an account</strong> &mdash; e.g. Service 7000 has Customer Portal, SAM Portal, and AI Automation as separate projects. Template selection here is <strong>tagging only</strong>: pick from what already exists, don't author anything on this screen.</p>
+
+    <div class="card card-pad">
+      <div class="row-2">
+        <div class="field">
+          <label for="proj-name">Project name</label>
+          <input type="text" id="proj-name" value="Customer Portal">
+        </div>
+        <div class="field">
+          <label for="proj-acc">Account</label>
+          <select id="proj-acc">
+            <option>Service 7000 &mdash; MNE</option>
+            <option>Acme Corp &mdash; BetaWorks Financial</option>
+          </select>
+          <div class="hint">Business unit badge follows the account automatically.</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Assigned people</label>
+        <div class="card" style="background:var(--surface-2); border-style:dashed;">
+          <div style="padding:6px 14px;">
+            <div class="people-row">
+              <span class="avatar">MR</span>
+              <span class="name">Mizanur R.</span>
+              <span class="chips"><span class="chip">PM</span></span>
+            </div>
+            <div class="people-row">
+              <span class="avatar">SK</span>
+              <span class="name">Sara K.</span>
+              <span class="chips"><span class="chip">TL</span></span>
+            </div>
+            <div class="people-row">
+              <span class="avatar">DP</span>
+              <span class="name">Dilip P.</span>
+              <span class="chips"><span class="chip">BA</span><span class="chip">QA</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="hint">One person can carry more than one function, same as PRD's participant-context idea &mdash; e.g. Dilip is BA + QA on this project.</div>
+        <button class="btn sm" style="margin-top:10px;">+ Add person</button>
+      </div>
+
+      <div class="field">
+        <label for="proj-tpl">Template</label>
+        <select id="proj-tpl">
+          <optgroup label="Global">
+            <option>Standard Quarterly Health Review</option>
+          </optgroup>
+          <optgroup label="Business Unit &middot; MNE">
+            <option selected>MNE Delivery Review v2</option>
+          </optgroup>
+          <optgroup label="Account &middot; Service 7000">
+            <option>Service 7000 Vendor Compliance Review</option>
+          </optgroup>
+        </select>
+        <div class="hint">Reused for every quarter this project runs. Need something new? Go to <a href="#" data-goto="templates">Template library</a> first, then come back and tag it.</div>
+      </div>
+
+      <div class="field">
+        <label>Starting quarter</label>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <div class="qtoggle" role="group" aria-label="Quarter">
+            <button type="button" class="qopt" data-q="Q1">Q1</button>
+            <button type="button" class="qopt active" data-q="Q2">Q2</button>
+            <button type="button" class="qopt" data-q="Q3">Q3</button>
+            <button type="button" class="qopt" data-q="Q4">Q4</button>
+          </div>
+          <select id="proj-year" style="max-width:110px;">
+            <option>2026</option>
+            <option>2027</option>
+          </select>
+        </div>
+        <div class="hint">Opens the project's first review cycle (here, Q2 2026). Additional quarters get added later from the project detail screen, reusing the same tagged template.</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn primary">Create project</button>
+        <button class="btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 03 TEMPLATES ============ -->
+  <div class="panel" data-panel="templates">
+    <p class="lede">Templates live in their own library, independent of any single project. Nothing tagged is <strong>Global</strong>; adding a business unit, then an account, then a project each narrow it one step further. Authoring always happens here, never inline while setting up a project.</p>
+
+    <section class="block">
+      <h2>Library</h2>
+      <p class="sub">Duplicate any template to start from its existing questions &mdash; the copy opens as a new draft at <span class="badge global" style="vertical-align:middle;">Global</span>, and you narrow it to a business unit, account, or project from there.</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Template</th><th>Scope</th><th>Context</th><th class="center">Questions</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><b>Standard Quarterly Health Review</b></td>
+              <td><span class="badge global">Global</span></td>
+              <td class="muted">Any business unit</td>
+              <td class="center num">24</td>
+              <td><span class="badge status-live">Published</span></td>
+              <td><button class="btn sm tpl-dup" type="button" data-name="Standard Quarterly Health Review">Duplicate</button></td>
+            </tr>
+            <tr>
+              <td><b>MNE Delivery Review v2</b></td>
+              <td><span class="badge dept">Business Unit</span></td>
+              <td class="muted">MNE</td>
+              <td class="center num">19</td>
+              <td><span class="badge status-live">Published</span></td>
+              <td><button class="btn sm tpl-dup" type="button" data-name="MNE Delivery Review v2">Duplicate</button></td>
+            </tr>
+            <tr>
+              <td><b>Service 7000 Vendor Compliance Review</b></td>
+              <td><span class="badge acct">Account</span></td>
+              <td class="muted">Service 7000 &middot; MNE</td>
+              <td class="center num">14</td>
+              <td><span class="badge status-live">Published</span></td>
+              <td><button class="btn sm tpl-dup" type="button" data-name="Service 7000 Vendor Compliance Review">Duplicate</button></td>
+            </tr>
+            <tr>
+              <td><b>Customer Portal Health Review v1</b></td>
+              <td><span class="badge proj">Project</span></td>
+              <td class="muted">Customer Portal &middot; Service 7000 &middot; authored by Mizanur R. (PM)</td>
+              <td class="center num">11</td>
+              <td><span class="badge status-live">Published</span></td>
+              <td><button class="btn sm tpl-dup" type="button" data-name="Customer Portal Health Review v1">Duplicate</button></td>
+            </tr>
+            <tr>
+              <td><b>SAM Portal Retention Review</b></td>
+              <td><span class="badge proj">Project</span></td>
+              <td class="muted">SAM Portal &middot; Service 7000 &middot; authored by Mizanur R. (PM)</td>
+              <td class="center num">6</td>
+              <td><span class="badge status-draft">Draft</span></td>
+              <td><button class="btn sm tpl-dup" type="button" data-name="SAM Portal Retention Review">Duplicate</button></td>
+            </tr>
+            <tr>
+              <td><b>AI Automation Delivery Review</b></td>
+              <td><span class="badge proj">Project</span></td>
+              <td class="muted">AI Automation &middot; Service 7000 &middot; authored by Mizanur R. (PM)</td>
+              <td class="center num">9</td>
+              <td><span class="badge status-live">Published</span></td>
+              <td><button class="btn sm tpl-dup" type="button" data-name="AI Automation Delivery Review">Duplicate</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" id="new-tpl-btn">+ New template</button>
+      </div>
+    </section>
+
+    <section class="block" id="new-tpl-form" style="display:none;">
+      <h2>New template</h2>
+      <p class="sub">Scope isn't picked directly &mdash; it falls out of how far you tag down the chain. Leave everything blank and it's Global; add a business unit, then an account, then a project to narrow it step by step.</p>
+      <div class="card card-pad">
+        <div class="row-2">
+          <div class="field">
+            <label for="tpl-name">Template name</label>
+            <input type="text" id="tpl-name" value="Client Satisfaction Pulse Check">
+          </div>
+          <div class="field">
+            <label>Resulting scope</label>
+            <div id="scope-readout" style="display:flex; align-items:center; height:37px;">
+              <span class="badge global">Global</span>
+            </div>
+            <div class="hint" id="scope-readout-hint">Nothing tagged below &mdash; usable on any project, in any business unit.</div>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-bottom:16px;">
+          <span class="ico">&#9673;</span>
+          <span>Nothing set &rarr; <b>Global</b> (the case right now). Add a business unit &rarr; narrows to <b>Business Unit</b>. + account &rarr; narrows to <b>Account</b>. + project &rarr; narrows to <b>Project</b>. Account only unlocks once a business unit is set, and project only once an account is set. Both are picked from what already exists &mdash; they can't be created here, so the account/project must exist before you can tag a template to it.</span>
+        </div>
+
+        <div class="row-3 scope-row">
+          <div class="field">
+            <label for="tpl-bu">Business unit <span class="muted" style="text-transform:none;font-weight:500;">(optional)</span></label>
+            <select id="tpl-bu">
+              <option value="" selected>&mdash; None: keep it Global &mdash;</option>
+              <option value="MNE">MNE</option>
+              <option value="BetaWorks Financial">BetaWorks Financial</option>
+              <option value="Northbridge Retail">Northbridge Retail</option>
+              <option value="Ferrovia Logistics">Ferrovia Logistics</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tpl-acc">Account <span class="muted" style="text-transform:none;font-weight:500;">(optional)</span></label>
+            <select id="tpl-acc" disabled>
+              <option value="" selected>&mdash; None &mdash;</option>
+              <option value="Service 7000">Service 7000</option>
+            </select>
+            <div class="hint">Pick a business unit first &mdash; then its accounts appear here.</div>
+          </div>
+          <div class="field">
+            <label for="tpl-proj">Project <span class="muted" style="text-transform:none;font-weight:500;">(optional)</span></label>
+            <select id="tpl-proj" disabled>
+              <option value="" selected>&mdash; None &mdash;</option>
+              <option value="Customer Portal">Customer Portal</option>
+              <option value="SAM Portal">SAM Portal</option>
+              <option value="AI Automation">AI Automation</option>
+            </select>
+            <div class="hint">Pick an account first &mdash; then its projects appear here.</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="tpl-desc">Description</label>
+          <textarea id="tpl-desc">Short, general-purpose check on customer sentiment &mdash; usable on any project company-wide.</textarea>
+        </div>
+
+        <div class="field">
+          <label>Questions</label>
+          <div class="card" style="background:var(--surface-2); border-style:dashed; padding:4px 4px;">
+            <div class="tablewrap" style="border:none; box-shadow:none;">
+              <table style="min-width:0;">
+                <thead><tr><th>Question</th><th>Type</th><th class="center">Required</th><th>Role relevance</th><th></th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>What drove uninstall/churn rate this quarter?</td>
+                    <td class="muted">Free text</td>
+                    <td class="center">&#10003;</td>
+                    <td><span class="chip">PM</span><span class="chip">BA</span></td>
+                    <td><button class="btn sm">Edit</button></td>
+                  </tr>
+                  <tr>
+                    <td>D7 / D30 retention vs. target</td>
+                    <td class="muted">Numeric</td>
+                    <td class="center">&#10003;</td>
+                    <td><span class="chip">PM</span></td>
+                    <td><button class="btn sm">Edit</button></td>
+                  </tr>
+                  <tr>
+                    <td>Overall retention health</td>
+                    <td class="muted">Choice: Green/Amber/Red</td>
+                    <td class="center">&#10003;</td>
+                    <td><span class="chip">PM</span><span class="chip">TL</span></td>
+                    <td><button class="btn sm">Edit</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <button class="btn sm" style="margin-top:10px;">+ Add question</button>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn primary">Publish template</button>
+          <button class="btn">Save as draft</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Editing a project-tier template</h2>
+      <p class="sub">Reached from the project detail screen. The signed-in PM owns this one.</p>
+      <div class="card card-pad" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:600; font-size:14.5px; margin-bottom:3px;">Customer Portal Health Review v1 <span class="badge proj" style="margin-left:6px;">Project</span></div>
+          <div class="muted" style="font-size:12.5px;">Tagged to Customer Portal &middot; 11 questions &middot; last edited by Mizanur R. (PM), your role</div>
+        </div>
+        <button class="btn primary sm">Edit template</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ 04 PROJECT DETAIL ============ -->
+  <div class="panel" data-panel="detail">
+    <div class="crumb"><b>Service 7000</b> &rsaquo; <b>Customer Portal</b></div>
+    <p class="lede">Everything a quarter needs is already decided here: who's on it, and which template every review cycle reuses.</p>
+
+    <div class="grid-2">
+      <div class="card card-pad">
+        <div class="sub" style="margin-bottom:10px;">Tagged template</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div>
+            <div style="font-weight:600;">Customer Portal Health Review v1</div>
+            <div class="muted" style="font-size:12.5px;">11 questions &middot; reused by every quarter below</div>
+          </div>
+          <span class="badge proj">Project</span>
+        </div>
+        <a href="#" data-goto="templates" style="display:inline-block; margin-top:10px; font-size:12.5px;">Open in template library &rarr;</a>
+      </div>
+
+      <div class="card card-pad">
+        <div class="sub" style="margin-bottom:10px;">Assigned people</div>
+        <div class="people-row"><span class="avatar">MR</span><span class="name">Mizanur R.</span><span class="chips"><span class="chip">PM</span></span></div>
+        <div class="people-row"><span class="avatar">SK</span><span class="name">Sara K.</span><span class="chips"><span class="chip">TL</span></span></div>
+        <div class="people-row"><span class="avatar">DP</span><span class="name">Dilip P.</span><span class="chips"><span class="chip">BA</span><span class="chip">QA</span></span></div>
+      </div>
+    </div>
+
+    <section class="block" style="margin-top:26px;">
+      <h2>Quarters</h2>
+      <p class="sub">Every card below runs the same tagged template &mdash; nothing is picked per quarter.</p>
+      <div class="qgrid">
+        <div class="qcard">
+          <span class="qname">Q4 2025</span>
+          <span class="badge status-live">Report sent</span>
+        </div>
+        <div class="qcard">
+          <span class="qname">Q1 2026</span>
+          <span class="badge status-progress">Collecting</span>
+        </div>
+        <div class="qcard">
+          <span class="qname">Q2 2026</span>
+          <span class="badge status-draft">Not started</span>
+        </div>
+        <div class="qcard ghost">+ Add quarter</div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="credit">Conceptual flow for planning only &middot; no live data, no backend &middot; entities: Business Unit (pre-seeded) &middot; Account &middot; Project &middot; Quarter &middot; Template (Global/Business Unit/Account/Project)</footer>
+</div>
+
+<button class="theme-toggle" id="theme-toggle" type="button">Toggle theme</button>
+
+<script>
+  (function(){
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.panel');
+    function activate(name){
+      tabs.forEach(function(t){ t.setAttribute('aria-selected', t.dataset.tab === name ? 'true' : 'false'); });
+      panels.forEach(function(p){ p.setAttribute('data-active', p.dataset.panel === name ? 'true' : 'false'); });
+    }
+    tabs.forEach(function(t){ t.addEventListener('click', function(){ activate(t.dataset.tab); }); });
+    document.querySelectorAll('[data-goto]').forEach(function(el){
+      el.addEventListener('click', function(e){ e.preventDefault(); activate(el.dataset.goto); });
+    });
+
+    (function(){
+      var navItems = document.querySelectorAll('.app-nav-item');
+      var views = document.querySelectorAll('.app-view');
+      function showView(name){
+        views.forEach(function(v){ v.setAttribute('data-active', v.dataset.appview === name ? 'true' : 'false'); });
+        navItems.forEach(function(n){ n.setAttribute('aria-selected', n.dataset.appnav === name ? 'true' : 'false'); });
+      }
+      navItems.forEach(function(n){ n.addEventListener('click', function(){ showView(n.dataset.appnav); }); });
+      function openAccount(){
+        views.forEach(function(v){ v.setAttribute('data-active', v.dataset.appview === 'account-detail' ? 'true' : 'false'); });
+        navItems.forEach(function(n){ n.setAttribute('aria-selected', n.dataset.appnav === 'accounts' ? 'true' : 'false'); });
+      }
+      document.querySelectorAll('[data-open-account]').forEach(function(card){
+        card.addEventListener('click', openAccount);
+        card.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAccount(); } });
+      });
+      document.querySelectorAll('[data-back-accounts]').forEach(function(link){
+        link.addEventListener('click', function(e){ e.preventDefault(); showView('accounts'); });
+      });
+      document.querySelectorAll('[data-back-account-detail]').forEach(function(link){
+        link.addEventListener('click', function(e){ e.preventDefault(); openAccount(); });
+      });
+
+      var QUARTER_DATA = {
+        'Customer Portal|Q4 2025': {
+          statusClass: 'status-live', statusLabel: 'Report sent',
+          summary: 'Delivery status Green — Q4 wrapped with the SSO migration shipped and CSAT holding at 4.6/5.',
+          qa: [
+            { q: 'What was the overall delivery status?', a: 'Green — on track, no material risks.' },
+            { q: 'Key achievements this quarter?', a: 'Completed SSO migration; reduced P1 incident count from 4 to 1.' },
+            { q: 'Areas requiring attention?', a: 'None flagged — customer feedback loop closed out clean.' }
+          ]
+        },
+        'Customer Portal|Q1 2026': {
+          statusClass: 'status-progress', statusLabel: 'Collecting',
+          summary: 'Product Manager has submitted; Tech Lead review is still in progress.',
+          qa: [
+            { q: 'What was the overall delivery status?', a: '(Product Manager) Amber — checkout redesign slipped two weeks.' },
+            { q: 'Support & incident numbers?', a: '(Tech Lead) Not yet submitted.' },
+            { q: 'Risks or dependencies?', a: '(Product Manager) Waiting on payment gateway vendor certification.' }
+          ]
+        },
+        'Customer Portal|Q2 2026': {
+          statusClass: 'status-draft', statusLabel: 'Not started',
+          summary: 'Questionnaires haven’t opened yet — this quarter starts once Q1 closes out.',
+          qa: []
+        },
+        'SAM Portal|Q2 2026': {
+          statusClass: 'status-draft', statusLabel: 'Not started',
+          summary: 'SAM Portal’s first review cycle — questionnaires haven’t opened yet.',
+          qa: []
+        },
+        'AI Automation|Q1 2026': {
+          statusClass: 'status-live', statusLabel: 'Report sent',
+          summary: 'Delivery status Amber — model retraining pipeline behind schedule but recovering.',
+          qa: [
+            { q: 'What was the overall delivery status?', a: 'Amber — retraining pipeline two sprints behind, mitigation plan in place.' },
+            { q: 'Key achievements this quarter?', a: 'Automated 40% of manual QA regression checks.' },
+            { q: 'Risks, issues, or dependencies?', a: 'GPU capacity constraints on the vendor side — owner: Tech Lead.' }
+          ]
+        },
+        'AI Automation|Q2 2026': {
+          statusClass: 'status-progress', statusLabel: 'Collecting',
+          summary: 'Tech Lead has submitted; Product Manager review is still in progress.',
+          qa: [
+            { q: 'Support & incident numbers?', a: '(Tech Lead) 2 major incidents, both resolved within SLA.' },
+            { q: 'What was the overall delivery status?', a: '(Product Manager) Not yet submitted.' }
+          ]
+        }
+      };
+
+      function openQuarter(project, quarter){
+        var key = project + '|' + quarter;
+        var d = QUARTER_DATA[key];
+        if (!d) return;
+        document.getElementById('qd-project').textContent = project;
+        document.getElementById('qd-quarter').textContent = quarter;
+        document.getElementById('qd-heading').textContent = project + ' · ' + quarter;
+        document.getElementById('qd-status').className = 'badge ' + d.statusClass;
+        document.getElementById('qd-status').textContent = d.statusLabel;
+        document.getElementById('qd-summary').textContent = d.summary;
+        var body = document.getElementById('qd-body');
+        if (d.qa.length === 0) {
+          body.innerHTML = '<p class="muted" style="font-size:13px; margin:0;">No answers yet — the Product Manager and Tech Lead questionnaires for this quarter haven’t opened. Each quarter gets its own independent questionnaire, never copied from the last one.</p>';
+        } else {
+          body.innerHTML = d.qa.map(function(row){
+            return '<div class="qa-row"><div class="qa-q">' + row.q + '</div><div class="qa-a">' + row.a + '</div></div>';
+          }).join('');
+        }
+        views.forEach(function(v){ v.setAttribute('data-active', v.dataset.appview === 'quarter-detail' ? 'true' : 'false'); });
+        navItems.forEach(function(n){ n.setAttribute('aria-selected', n.dataset.appnav === 'accounts' ? 'true' : 'false'); });
+      }
+      document.querySelectorAll('.qchip').forEach(function(chip){
+        chip.addEventListener('click', function(){ openQuarter(chip.dataset.project, chip.textContent.trim()); });
+      });
+    })();
+
+    document.querySelectorAll('.qtoggle').forEach(function(group){
+      group.querySelectorAll('.qopt').forEach(function(opt){
+        opt.addEventListener('click', function(){
+          group.querySelectorAll('.qopt').forEach(function(o){ o.classList.remove('active'); });
+          opt.classList.add('active');
+        });
+      });
+    });
+
+    var syncTplScope = function(){};
+    (function(){
+      var bu = document.getElementById('tpl-bu');
+      var acc = document.getElementById('tpl-acc');
+      var proj = document.getElementById('tpl-proj');
+      var readout = document.getElementById('scope-readout');
+      var hint = document.getElementById('scope-readout-hint');
+      if (!bu) return;
+
+      function sync(){
+        var buSet = !!bu.value;
+        var accSet = buSet && !!acc.value;
+        var projSet = accSet && !!proj.value;
+
+        acc.disabled = !buSet;
+        proj.disabled = !accSet;
+        if (!buSet) { acc.value = ''; }
+        if (!accSet) { proj.value = ''; }
+
+        var tier, label, hintText;
+        if (projSet) {
+          tier = 'proj'; label = 'Project';
+          hintText = 'Business unit, account, and project all set — usable only on ' + proj.value + '.';
+        } else if (accSet) {
+          tier = 'acct'; label = 'Account';
+          hintText = 'Business unit and account set, no project — usable on any project under ' + acc.value + '.';
+        } else if (buSet) {
+          tier = 'dept'; label = 'Business Unit';
+          hintText = 'Only a business unit is set — usable on any project under ' + bu.value + '.';
+        } else {
+          tier = 'global'; label = 'Global';
+          hintText = 'Nothing tagged below — usable on any project, in any business unit.';
+        }
+        readout.innerHTML = '<span class="badge ' + tier + '">' + label + '</span>';
+        hint.textContent = hintText;
+      }
+      [bu, acc, proj].forEach(function(el){ el.addEventListener('change', sync); });
+      syncTplScope = sync;
+      sync();
+    })();
+
+    var newTplBtn = document.getElementById('new-tpl-btn');
+    var newTplForm = document.getElementById('new-tpl-form');
+    if (newTplBtn) {
+      newTplBtn.addEventListener('click', function(){
+        newTplForm.style.display = newTplForm.style.display === 'none' ? 'block' : 'none';
+        if (newTplForm.style.display === 'block') { newTplForm.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
+    }
+
+    document.querySelectorAll('.tpl-dup').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var name = document.getElementById('tpl-name');
+        var bu = document.getElementById('tpl-bu');
+        var acc = document.getElementById('tpl-acc');
+        var proj = document.getElementById('tpl-proj');
+        name.value = btn.dataset.name + ' (copy)';
+        bu.value = '';
+        acc.value = '';
+        proj.value = '';
+        syncTplScope();
+        newTplForm.style.display = 'block';
+        newTplForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    var toggle = document.getElementById('theme-toggle');
+    var root = document.documentElement;
+    toggle.addEventListener('click', function(){
+      var cur = root.getAttribute('data-theme');
+      var mql = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var next;
+      if (!cur) { next = mql ? 'light' : 'dark'; }
+      else if (cur === 'dark') { next = 'light'; }
+      else { next = 'dark'; }
+      root.setAttribute('data-theme', next);
+    });
+  })();
+</script>
